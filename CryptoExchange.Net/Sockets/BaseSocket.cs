@@ -132,17 +132,17 @@ namespace CryptoExchange.Net.Sockets
 
         private void HandleByteData(byte[] data)
         {
-            if (DataInterpreterBytes == null)
-                throw new Exception("Byte interpreter not set while receiving byte data");
-
-            try
+            if (DataInterpreterBytes != null)
             {
-                var message = DataInterpreterBytes(data);
-                Handle(messageHandlers, message);
-            }
-            catch (Exception ex)
-            {
-                log.Write(LogVerbosity.Error, $"{Id} Something went wrong while processing a byte message from the socket: {ex}");
+                try
+                {
+                    var message = DataInterpreterBytes(data);
+                    Handle(messageHandlers, message);
+                }
+                catch (Exception ex)
+                {
+                    log.Write(LogVerbosity.Error, $"{Id} Something went wrong while processing a byte message from the socket: {ex}");
+                }
             }
         }
 
