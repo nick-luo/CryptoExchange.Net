@@ -40,7 +40,7 @@ namespace CryptoExchange.Net.OrderBook
                 set { } }
         }
 
-        private static readonly ISymbolOrderBookEntry emptySymbolOrderBookEntry = new EmptySymbolOrderBookEntry();
+        private static readonly ISymbolOrderBookEntry _emptySymbolOrderBookEntry = new EmptySymbolOrderBookEntry();
 
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace CryptoExchange.Net.OrderBook
             get
             {
                 lock (_bookLock)
-                    return bids.FirstOrDefault().Value ?? emptySymbolOrderBookEntry;
+                    return bids.FirstOrDefault().Value ?? _emptySymbolOrderBookEntry;
             }
         }
 
@@ -177,7 +177,7 @@ namespace CryptoExchange.Net.OrderBook
             get
             {
                 lock (_bookLock)
-                    return asks.FirstOrDefault().Value ?? emptySymbolOrderBookEntry;
+                    return asks.FirstOrDefault().Value ?? _emptySymbolOrderBookEntry;
             }
         }
 
@@ -258,22 +258,30 @@ namespace CryptoExchange.Net.OrderBook
             }
 
             _subscription = startResult.Data;
-            _subscription.ConnectionLost += () =>
-            {
-                log.Write(LogLevel.Warning, $"{Id} order book {Symbol} connection lost");
-                Status = OrderBookStatus.Reconnecting;
-                Reset();
-            };
-            _subscription.ConnectionClosed += () =>
-            {
-                log.Write(LogLevel.Warning, $"{Id} order book {Symbol} disconnected");
-                Status = OrderBookStatus.Disconnected;
-                _ = StopAsync();
-            };
+            _subscription.ConnectionLost += HandleConnectionLost;
+            _subscription.ConnectionClosed += HandleConnectionClosed;
+            _subscription.ConnectionRestored += HandleConnectionRestored;
 
-            _subscription.ConnectionRestored += async time => await ResyncAsync().ConfigureAwait(false);
             Status = OrderBookStatus.Synced;
             return new CallResult<bool>(true);
+        }
+
+        private void HandleConnectionLost() {
+             log.Write(LogLevel.Warning, $"{Id} order book {Symbol} connection lost");
+             if (Status != OrderBookStatus.Disposed) {
+                Status = OrderBookStatus.Reconnecting;
+                Reset();
+            }
+        }
+
+        private void HandleConnectionClosed() {
+            log.Write(LogLevel.Warning, $"{Id} order book {Symbol} disconnected");
+            Status = OrderBookStatus.Disconnected;
+            _ = StopAsync();
+        }
+
+        private async void HandleConnectionRestored(TimeSpan _) {
+            await ResyncAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -286,20 +294,24 @@ namespace CryptoExchange.Net.OrderBook
             if (_processTask != null)
                 await _processTask.ConfigureAwait(false);
 
-            if (_subscription != null)
+            if (_subscription != null) {
                 await _subscription.CloseAsync().ConfigureAwait(false);
+                _subscription.ConnectionLost -= HandleConnectionLost;
+                _subscription.ConnectionClosed -= HandleConnectionClosed;
+                _subscription.ConnectionRestored -= HandleConnectionRestored;
+            }
             log.Write(LogLevel.Trace, $"{Id} order book {Symbol} stopped");
         }
 
         /// <inheritdoc/>
-        public CallResult<decimal> CalculateAverageFillPrice(decimal quantity, OrderBookEntryType type)
+        public CallResult<decimal> CalculateAverageFillPrice(decimal baseQuantity, OrderBookEntryType type)
         {
             if (Status != OrderBookStatus.Synced)
                 return new CallResult<decimal>(new InvalidOperationError($"{nameof(CalculateAverageFillPrice)} is not available when book is not in Synced state"));
 
             var totalCost = 0m;
             var totalAmount = 0m;
-            var amountLeft = quantity;
+            var amountLeft = baseQuantity;
             lock (_bookLock)
             {
                 var list = type == OrderBookEntryType.Ask ? asks : bids;
@@ -320,6 +332,35 @@ namespace CryptoExchange.Net.OrderBook
             }
 
             return new CallResult<decimal>(Math.Round(totalCost / totalAmount, 8));
+        }
+
+        /// <inheritdoc/>
+        public CallResult<decimal> CalculateTradableAmount(decimal quoteQuantity, OrderBookEntryType type)
+        {
+            if (Status != OrderBookStatus.Synced)
+                return new CallResult<decimal>(new InvalidOperationError($"{nameof(CalculateTradableAmount)} is not available when book is not in Synced state"));
+
+            var quoteQuantityLeft = quoteQuantity;
+            var totalBaseQuantity = 0m;
+            lock (_bookLock)
+            {
+                var list = type == OrderBookEntryType.Ask ? asks : bids;
+
+                var step = 0;
+                while (quoteQuantityLeft > 0)
+                {
+                    if (step == list.Count)
+                        return new CallResult<decimal>(new InvalidOperationError("Quantity is larger than order in the order book"));
+
+                    var element = list.ElementAt(step);
+                    var stepAmount = Math.Min(element.Value.Quantity * element.Value.Price, quoteQuantityLeft);
+                    quoteQuantityLeft -= stepAmount;
+                    totalBaseQuantity += stepAmount / element.Value.Price;
+                    step++;
+                }
+            }
+
+            return new CallResult<decimal>(Math.Round(totalBaseQuantity, 8));
         }
 
         /// <summary>
@@ -483,7 +524,7 @@ namespace CryptoExchange.Net.OrderBook
         /// <param name="timeout">Max wait time</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns></returns>
-        protected async Task<CallResult<bool>> WaitForSetOrderBookAsync(int timeout, CancellationToken ct)
+        protected async Task<CallResult<bool>> WaitForSetOrderBookAsync(TimeSpan timeout, CancellationToken ct)
         {
             var startWait = DateTime.UtcNow;
             while (!bookSet && Status == OrderBookStatus.Syncing)
@@ -491,12 +532,12 @@ namespace CryptoExchange.Net.OrderBook
                 if(ct.IsCancellationRequested)
                     return new CallResult<bool>(new CancellationRequestedError());
 
-                if ((DateTime.UtcNow - startWait).TotalMilliseconds > timeout)
+                if (DateTime.UtcNow - startWait > timeout)
                     return new CallResult<bool>(new ServerError("Timeout while waiting for data"));
 
                 try
                 {
-                    await Task.Delay(10, ct).ConfigureAwait(false);
+                    await Task.Delay(50, ct).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException)
                 { }
@@ -569,7 +610,9 @@ namespace CryptoExchange.Net.OrderBook
             var (bestBid, bestAsk) = BestOffers;
             if (bestBid.Price != prevBestBid.Price || bestBid.Quantity != prevBestBid.Quantity ||
                    bestAsk.Price != prevBestAsk.Price || bestAsk.Quantity != prevBestAsk.Quantity)
+            {
                 OnBestOffersChanged?.Invoke((bestBid, bestAsk));
+            }
         }
 
         private void Reset()
@@ -601,13 +644,13 @@ namespace CryptoExchange.Net.OrderBook
 
         private async Task ProcessQueue()
         {
-            while (Status != OrderBookStatus.Disconnected)
+            while (Status != OrderBookStatus.Disconnected && Status != OrderBookStatus.Disposed)
             {
                 await _queueEvent.WaitAsync().ConfigureAwait(false);
 
                 while (_processQueue.TryDequeue(out var item))
                 {
-                    if (Status == OrderBookStatus.Disconnected)
+                    if (Status == OrderBookStatus.Disconnected || Status == OrderBookStatus.Disposed)
                         break;
 
                     if (_stopProcessing)
@@ -740,7 +783,9 @@ namespace CryptoExchange.Net.OrderBook
                     _ = _subscription!.ReconnectAsync();
                 }
                 else
+                {
                     await ResyncAsync().ConfigureAwait(false);
+                }
             });
         }
 

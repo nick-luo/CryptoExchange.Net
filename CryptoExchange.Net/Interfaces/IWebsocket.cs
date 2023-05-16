@@ -1,4 +1,5 @@
 ﻿using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Sockets;
 using System;
 using System.Security.Authentication;
 using System.Text;
@@ -27,43 +28,31 @@ namespace CryptoExchange.Net.Interfaces
         /// Websocket opened event
         /// </summary>
         event Action OnOpen;
+        /// <summary>
+        /// Websocket has lost connection to the server and is attempting to reconnect
+        /// </summary>
+        event Action OnReconnecting;
+        /// <summary>
+        /// Websocket has reconnected to the server
+        /// </summary>
+        event Action OnReconnected;
+        /// <summary>
+        /// Get reconntion url
+        /// </summary>
+        Func<Task<Uri?>>? GetReconnectionUrl { get; set; }
 
         /// <summary>
         /// Unique id for this socket
         /// </summary>
         int Id { get; }
         /// <summary>
-        /// Origin header
-        /// </summary>
-        string? Origin { get; set; }
-        /// <summary>
-        /// Encoding to use for sending/receiving string data
-        /// </summary>
-        Encoding? Encoding { get; set; }
-        /// <summary>
-        /// Whether socket is in the process of reconnecting
-        /// </summary>
-        bool Reconnecting { get; set; }
-        /// <summary>
-        /// The max amount of outgoing messages per second
-        /// </summary>
-        int? RatelimitPerSecond { get; set; }
-        /// <summary>
         /// The current kilobytes per second of data being received, averaged over the last 3 seconds
         /// </summary>
         double IncomingKbps { get; }
         /// <summary>
-        /// Handler for byte data
+        /// The uri the socket connects to
         /// </summary>
-        Func<byte[], string>? DataInterpreterBytes { get; set; }
-        /// <summary>
-        /// Handler for string data
-        /// </summary>
-        Func<string, string>? DataInterpreterString { get; set; }
-        /// <summary>
-        /// The url the socket connects to
-        /// </summary>
-        string Url { get; }
+        Uri Uri { get; }
         /// <summary>
         /// Whether the socket connection is closed
         /// </summary>
@@ -72,19 +61,6 @@ namespace CryptoExchange.Net.Interfaces
         /// Whether the socket connection is open
         /// </summary>
         bool IsOpen { get; }
-        /// <summary>
-        /// Supported ssl protocols
-        /// </summary>
-        SslProtocols SSLProtocols { get; set; }
-        /// <summary>
-        /// The max time for no data being received before the connection is considered lost
-        /// </summary>
-        TimeSpan Timeout { get; set; }
-        /// <summary>
-        /// Set a proxy to use when connecting
-        /// </summary>
-        /// <param name="proxy"></param>
-        void SetProxy(ApiProxy proxy);
         /// <summary>
         /// Connect the socket
         /// </summary>
@@ -96,9 +72,10 @@ namespace CryptoExchange.Net.Interfaces
         /// <param name="data"></param>
         void Send(string data);
         /// <summary>
-        /// Reset socket when a connection is lost to prepare for a new connection
+        /// Reconnect the socket
         /// </summary>
-        void Reset();
+        /// <returns></returns>
+        Task ReconnectAsync();
         /// <summary>
         /// Close the connection
         /// </summary>

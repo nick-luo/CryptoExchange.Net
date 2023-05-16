@@ -22,8 +22,7 @@ namespace CryptoExchange.Net.Sockets
         }
 
         /// <summary>
-        /// Event when the connection is closed. This event happens when reconnecting/resubscribing has failed too often based on the <see cref="BaseSocketClientOptions.MaxReconnectTries"/> and <see cref="BaseSocketClientOptions.MaxResubscribeTries"/> options,
-        /// or <see cref="BaseSocketClientOptions.AutoReconnect"/> is false. The socket will not be reconnected
+        /// Event when the connection is closed and will not be reconnected
         /// </summary>
         public event Action ConnectionClosed
         {
@@ -72,7 +71,7 @@ namespace CryptoExchange.Net.Sockets
         /// <summary>
         /// The id of the socket
         /// </summary>
-        public int SocketId => connection.Socket.Id;
+        public int SocketId => connection.SocketId;
 
         /// <summary>
         /// The id of the subscription
@@ -103,9 +102,9 @@ namespace CryptoExchange.Net.Sockets
         /// Close the socket to cause a reconnect
         /// </summary>
         /// <returns></returns>
-        internal Task ReconnectAsync()
+        public Task ReconnectAsync()
         {
-            return connection.Socket.CloseAsync();
+            return connection.TriggerReconnectAsync();
         }
 
         /// <summary>

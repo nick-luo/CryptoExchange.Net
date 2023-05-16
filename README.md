@@ -8,16 +8,114 @@ CryptoExchange.Net is a base package which can be used to easily implement crypt
 ## Discord
 A Discord server is available [here](https://discord.gg/MSpeEtSY8t). Feel free to join for discussion and/or questions around the CryptoExchange.Net and implementation libraries.
 
-## Donate / Sponsor
-I develop and maintain this package on my own for free in my spare time. Donations are greatly appreciated. If you prefer to donate any other currency please contact me.
+## Support the project
+I develop and maintain this package on my own for free in my spare time, any support is greatly appreciated.
+
+### Referral link
+Use one of the following following referral links to signup to a new exchange to pay a small percentage of the trading fees you pay to support the project instead of paying them straight to the exchange. This doesn't cost you a thing!
+[Binance](https://accounts.binance.com/en/register?ref=10153680)  
+[Bitfinex](https://www.bitfinex.com/sign-up?refcode=kCCe-CNBO)  
+[Bittrex](https://bittrex.com/discover/join?referralCode=TST-DJM-CSX)  
+[Bybit](https://partner.bybit.com/b/jkorf)  
+[CoinEx](https://www.coinex.com/register?refer_code=hd6gn)  
+[FTX](https://ftx.com/referrals#a=31620192)  
+[Huobi](https://www.huobi.com/en-us/v/register/double-invite/?inviter_id=11343840&invite_code=fxp93)  
+[Kucoin](https://www.kucoin.com/ucenter/signup?rcode=RguMux)  
+
+### Donate
+Make a one time donation in a crypto currency of your choice. If you prefer to donate a currency not listed here please contact me.
 
 **Btc**:  12KwZk3r2Y3JZ2uMULcjqqBvXmpDwjhhQS  
 **Eth**:  0x069176ca1a4b1d6e0b7901a6bc0dbf3bb0bf5cc2  
 **Nano**: xrb_1ocs3hbp561ef76eoctjwg85w5ugr8wgimkj8mfhoyqbx4s1pbc74zggw7gs  
 
-Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf)  
+### Sponsor
+Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 5.4.3 - 14 Apr 2023
+    * Fixed potential threading exception in socket connection
+
+* Version 5.4.2 - 01 Apr 2023
+    * Reverted socket changes as it seems to cause reconnect to hang
+
+* Version 5.4.1 - 18 Mar 2023
+    * Added CalculateTradableAmount to SymbolOrderBook
+    * Improved socket reconnect robustness
+    * Fixed api rate limiter not working correctly
+
+* Version 5.4.0 - 14 Feb 2023
+    * Added unsubscribing when receiving subscribe answer after the request timeout has passed
+    * Fixed socket options copying
+    * Made TimeSync implementation optional
+    * Cleaned up ApiCredentials and added better support for extending ApiCredentials
+
+* Version 5.3.1 - 08 Dec 2022
+    * Added default request parameter ordering before applying authentication
+    * Fixed possible issue where a socket would reconnect when it should close if it was already in reconnecting
+
+* Version 5.3.0 - 14 Nov 2022
+    * Reworked client architecture, shifting funcationality to the ApiClient
+    * Fixed ArrayConverter exponent parsing
+    * Fixed ArrayConverter not checking null
+    * Added optional delay setting after establishing socket connection
+    * Added callback for revitalizing a socket request when reconnecting
+    * Fixed proxy setting websocket
+
+* Version 5.2.4 - 31 Jul 2022
+    * Added handling of PlatformNotSupportedException when trying to use websocket from WebAssembly
+    * Changed DataEvent to have a public constructor for testing purposes
+    * Fixed EnumConverter serializing values without proper quotes
+    * Fixed websocket connection reconnecting too quickly when resubscribing/reauthenticating fails
+
+* Version 5.2.3 - 19 Jul 2022
+    * Fixed socket getting disconnected when `no data` timeout is reached instead of being reconnected
+
+* Version 5.2.2 - 17 Jul 2022
+    * Added support for retrieving a new url when socket connection is lost and reconnection will happen
+
+* Version 5.2.1 - 16 Jul 2022
+    * Fixed socket reconnect issue
+    * Fixed `message not handled` messages after unsubscribing
+    * Fixed error returning for non-json error responses
+
+* Version 5.2.0 - 10 Jul 2022
+    * Refactored websocket code, removed some clutter and simplified
+    * Added ReconnectAsync and GetSubscriptionsState methods on socket clients
+
+* Version 5.1.12 - 12 Jun 2022
+    * Changed time sync so requests no longer wait for it to complete unless it's the first time
+    * Made log client options changable after client creation
+    * Fixed proxy setting not used when reconnecting socket
+    * Changed MaxSocketConnections to a client options
+    * Updated socket reconnection logic
+
+* Version 5.1.12 - 12 Jun 2022
+    * Changed time sync so requests no longer wait for it to complete unless it's the first time
+    * Made log client options changable after client creation
+    * Fixed proxy setting not used when reconnecting socket
+    * Updated socket reconnection logic
+
+* Version 5.1.11 - 24 May 2022
+    * Added KeepAliveInterval setting
+    * Fixed port not being copied when setting parameters on request
+    * Fixed inconsistent PackageReference casing in csproj
+
+* Version 5.1.10 - 22 May 2022
+    * Fixed order book reconnecting while Diposed
+    * Fixed exception when disposing socket client while reconnecting
+    * Added additional null/default checking in DateTimeConverter
+    * Changed ConnectionLost subscription event to run in seperate task to prevent exception/longer operations from intervering with reconnecting
+
+* Version 5.1.9 - 08 May 2022
+    * Added latency to the timesync calculation
+    * Small fix for exception in socket close handling
+
+* Version 5.1.8 - 01 May 2022
+    * Cleanup socket code, fixed an issue which could cause connections to never reconnect when connection was lost
+    * Added support for sending requests which expect an empty response
+    * Fixed issue with the DateTimeConverter date interpretation
+
 * Version 5.1.7 - 14 Apr 2022
     * Moved some Rest parameters from BaseRestClient to RestApiClient to allow different implementations for sub clients
 
