@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace CryptoExchange.Net.Objects
     public class AsyncResetEvent : IDisposable
     {
         private static readonly Task<bool> _completed = Task.FromResult(true);
-        private readonly Queue<TaskCompletionSource<bool>> _waits = new Queue<TaskCompletionSource<bool>>();
+        private Queue<TaskCompletionSource<bool>> _waits = new Queue<TaskCompletionSource<bool>>();
         private bool _signaled;
         private readonly bool _reset;
 
@@ -31,7 +32,7 @@ namespace CryptoExchange.Net.Objects
         /// Wait for the AutoResetEvent to be set
         /// </summary>
         /// <returns></returns>
-        public Task<bool> WaitAsync(TimeSpan? timeout = null)
+        public Task<bool> WaitAsync(TimeSpan? timeout = null, CancellationToken ct = default)
         {
             lock (_waits)
             {
@@ -43,15 +44,28 @@ namespace CryptoExchange.Net.Objects
                 }
                 else
                 {
+                    if (ct.IsCancellationRequested)
+                        return _completed;
+
                     var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                    if(timeout != null)
+                    if (timeout.HasValue)
                     {
-                        var cancellationSource = new CancellationTokenSource(timeout.Value);
-                        var registration = cancellationSource.Token.Register(() =>
+                        var timeoutSource = new CancellationTokenSource(timeout.Value);
+                        var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutSource.Token, ct);
+                        ct = cancellationSource.Token;
+                    }
+
+                    var registration = ct.Register(() =>
+                    {
+                        lock (_waits)
                         {
                             tcs.TrySetResult(false);
-                        }, useSynchronizationContext: false);
-                    }
+
+                            // Not the cleanest but it works
+                            _waits = new Queue<TaskCompletionSource<bool>>(_waits.Where(i => i != tcs));
+                        }
+                    }, useSynchronizationContext: false);
+                    
 
                     _waits.Enqueue(tcs);
                     return tcs.Task;

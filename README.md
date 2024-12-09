@@ -1,38 +1,381 @@
-# CryptoExchange.Net
-[![.NET](https://github.com/JKorf/CryptoExchange.Net/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/JKorf/CryptoExchange.Net/actions/workflows/dotnet.yml) ![Nuget version](https://img.shields.io/nuget/v/CryptoExchange.Net.svg)  ![Nuget downloads](https://img.shields.io/nuget/dt/CryptoExchange.Net.svg)
+# ![.CryptoExchange.Net](https://github.com/JKorf/CryptoExchange.Net/blob/ffcb7db8ff597c2f14982d68464015a748815580/CryptoExchange.Net/Icon/icon.png) CryptoExchange.Net  
 
-CryptoExchange.Net is a base package which can be used to easily implement crypto currency exchange API's in C#. This library offers base classes for creating rest and websocket clients, and includes additional features like an automatically synchronizing order book implementation, error handling and automatic reconnects on websocket connections.
+[![.NET](https://img.shields.io/github/actions/workflow/status/JKorf/CryptoExchange.Net/dotnet.yml?style=for-the-badge)](https://github.com/JKorf/CryptoExchange.Net/actions/workflows/dotnet.yml) [![Nuget downloads](https://img.shields.io/nuget/dt/CryptoExchange.Net.svg?style=for-the-badge)](https://www.nuget.org/packages/CryptoExchange.Net) ![License](https://img.shields.io/github/license/JKorf/CryptoExchange.Net?style=for-the-badge)
 
-[Documentation](https://jkorf.github.io/CryptoExchange.Net/)
+CryptoExchange.Net is a base library which is used to implement different cryptocurrency (exchange) API's. It provides a standardized way of implementing different API's, which results in a very similar experience for users of the API implementations. 
+Note that the CryptoExchange.Net package itself can not be used directly for accessing API's. Either install a client library from the list below or use [CryptoClients.Net](https://github.com/jkorf/CryptoClients.Net) which includes access to all exchange API's.
+
+For more information on what CryptoExchange.Net and it's client libraries offers see the [Documentation](https://jkorf.github.io/CryptoExchange.Net/).
+
+### Current implementations
+The following API's are directly supported. Note that there are 3rd party implementations going around, but only these are created and supported by me:
+
+|Exchange|Repository|Nuget|
+|--|--|--|
+|Binance|[JKorf/Binance.Net](https://github.com/JKorf/Binance.Net)|[![Nuget version](https://img.shields.io/nuget/v/Binance.net.svg?style=flat-square)](https://www.nuget.org/packages/Binance.Net)|
+|BingX|[JKorf/BingX.Net](https://github.com/JKorf/BingX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.BingX.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.BingX.Net)|
+|Bitfinex|[JKorf/Bitfinex.Net](https://github.com/JKorf/Bitfinex.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bitfinex.net.svg?style=flat-square)](https://www.nuget.org/packages/Bitfinex.Net)|
+|Bitget|[JKorf/Bitget.Net](https://github.com/JKorf/Bitget.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.Bitget.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.Bitget.Net)|
+|BitMart|[JKorf/BitMart.Net](https://github.com/JKorf/BitMart.Net)|[![Nuget version](https://img.shields.io/nuget/v/BitMart.net.svg?style=flat-square)](https://www.nuget.org/packages/BitMart.Net)|
+|Bybit|[JKorf/Bybit.Net](https://github.com/JKorf/Bybit.Net)|[![Nuget version](https://img.shields.io/nuget/v/Bybit.net.svg?style=flat-square)](https://www.nuget.org/packages/Bybit.Net)|
+|Coinbase|[JKorf/Coinbase.Net](https://github.com/JKorf/Coinbase.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.Coinbase.Net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.Coinbase.Net)|
+|CoinEx|[JKorf/CoinEx.Net](https://github.com/JKorf/CoinEx.Net)|[![Nuget version](https://img.shields.io/nuget/v/CoinEx.net.svg?style=flat-square)](https://www.nuget.org/packages/CoinEx.Net)|
+|CoinGecko|[JKorf/CoinGecko.Net](https://github.com/JKorf/CoinGecko.Net)|[![Nuget version](https://img.shields.io/nuget/v/CoinGecko.net.svg?style=flat-square)](https://www.nuget.org/packages/CoinGecko.Net)|
+|Crypto.com|[JKorf/CryptoCom.Net](https://github.com/JKorf/CryptoCom.Net)|[![Nuget version](https://img.shields.io/nuget/v/CryptoCom.net.svg?style=flat-square)](https://www.nuget.org/packages/CryptoCom.Net)|
+|Gate.io|[JKorf/GateIo.Net](https://github.com/JKorf/GateIo.Net)|[![Nuget version](https://img.shields.io/nuget/v/GateIo.net.svg?style=flat-square)](https://www.nuget.org/packages/GateIo.Net)|
+|HTX|[JKorf/HTX.Net](https://github.com/JKorf/HTX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JKorf.HTX.net.svg?style=flat-square)](https://www.nuget.org/packages/JKorf.HTX.Net)|
+|Kraken|[JKorf/Kraken.Net](https://github.com/JKorf/Kraken.Net)|[![Nuget version](https://img.shields.io/nuget/v/KrakenExchange.net.svg?style=flat-square)](https://www.nuget.org/packages/KrakenExchange.Net)|
+|Kucoin|[JKorf/Kucoin.Net](https://github.com/JKorf/Kucoin.Net)|[![Nuget version](https://img.shields.io/nuget/v/Kucoin.net.svg?style=flat-square)](https://www.nuget.org/packages/Kucoin.Net)|
+|Mexc|[JKorf/Mexc.Net](https://github.com/JKorf/Mexc.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.Mexc.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.Mexc.Net)|
+|OKX|[JKorf/OKX.Net](https://github.com/JKorf/OKX.Net)|[![Nuget version](https://img.shields.io/nuget/v/JK.OKX.net.svg?style=flat-square)](https://www.nuget.org/packages/JK.OKX.Net)|
+|WhiteBit|[JKorf/WhiteBit.Net](https://github.com/JKorf/WhiteBit.Net)|[![Nuget version](https://img.shields.io/nuget/v/WhiteBit.net.svg?style=flat-square)](https://www.nuget.org/packages/WhiteBit.Net)|
+|XT|[JKorf/XT.Net](https://github.com/JKorf/XT.Net)|[![Nuget version](https://img.shields.io/nuget/v/XT.net.svg?style=flat-square)](https://www.nuget.org/packages/XT.Net)|
+
+Any of these can be installed independently or install [CryptoClients.Net](https://github.com/jkorf/CryptoClients.Net) which includes all exchange API's.
 
 ## Discord
+[![Nuget version](https://img.shields.io/discord/847020490588422145?style=for-the-badge)](https://discord.gg/MSpeEtSY8t)  
 A Discord server is available [here](https://discord.gg/MSpeEtSY8t). Feel free to join for discussion and/or questions around the CryptoExchange.Net and implementation libraries.
 
 ## Support the project
-I develop and maintain this package on my own for free in my spare time, any support is greatly appreciated.
+Any support is greatly appreciated.
 
-### Referral link
-Use one of the following following referral links to signup to a new exchange to pay a small percentage of the trading fees you pay to support the project instead of paying them straight to the exchange. This doesn't cost you a thing!
-[Binance](https://accounts.binance.com/en/register?ref=10153680)  
-[Bitfinex](https://www.bitfinex.com/sign-up?refcode=kCCe-CNBO)  
-[Bittrex](https://bittrex.com/discover/join?referralCode=TST-DJM-CSX)  
-[Bybit](https://partner.bybit.com/b/jkorf)  
-[CoinEx](https://www.coinex.com/register?refer_code=hd6gn)  
-[FTX](https://ftx.com/referrals#a=31620192)  
-[Huobi](https://www.huobi.com/en-us/v/register/double-invite/?inviter_id=11343840&invite_code=fxp93)  
-[Kucoin](https://www.kucoin.com/ucenter/signup?rcode=RguMux)  
+## Referral
+When creating an account on new exchanges please consider using a referral link from below to support development
+
+|Exchange|Link|
+|--|--|
+|Bybit|[https://partner.bybit.com/b/jkorf](https://partner.bybit.com/b/jkorf)|
+|Coinbase|[https://advanced.coinbase.com/join/T6H54H8](https://advanced.coinbase.com/join/T6H54H8)|
+|CoinEx|[https://www.coinex.com/register?refer_code=hd6gn](https://www.coinex.com/register?refer_code=hd6gn)|
+|Crypto.com|[https://crypto.com/exch/26ge92xbkn](https://crypto.com/exch/26ge92xbkn)|
+|HTX|[https://www.htx.com/invite/en-us/1f?invite_code=fxp9](https://www.htx.com/invite/en-us/1f?invite_code=fxp9)|
+|Kucoin|[https://www.kucoin.com/r/rf/QBS4FPED](https://www.kucoin.com/r/rf/QBS4FPED)|
+|OKX|[https://okx.com/join/48046699](https://okx.com/join/48046699)|
+|WhiteBit|[https://whitebit.com/referral/a8e59b59-186c-4662-824c-3095248e0edf](https://whitebit.com/referral/a8e59b59-186c-4662-824c-3095248e0edf)|
+|XT|[https://www.xt.com/en/accounts/register?ref=1HRM5J](https://www.xt.com/en/accounts/register?ref=1HRM5J)|
 
 ### Donate
 Make a one time donation in a crypto currency of your choice. If you prefer to donate a currency not listed here please contact me.
 
-**Btc**:  12KwZk3r2Y3JZ2uMULcjqqBvXmpDwjhhQS  
-**Eth**:  0x069176ca1a4b1d6e0b7901a6bc0dbf3bb0bf5cc2  
-**Nano**: xrb_1ocs3hbp561ef76eoctjwg85w5ugr8wgimkj8mfhoyqbx4s1pbc74zggw7gs  
+**Btc**:  bc1q277a5n54s2l2mzlu778ef7lpkwhjhyvghuv8qf  
+**Eth**:  0xcb1b63aCF9fef2755eBf4a0506250074496Ad5b7   
+**USDT (TRX)**  TKigKeJPXZYyMVDgMyXxMf17MWYia92Rjd
 
 ### Sponsor
 Alternatively, sponsor me on Github using [Github Sponsors](https://github.com/sponsors/JKorf). 
 
 ## Release notes
+* Version 8.4.4 - 08 Dec 2024
+    * Changed JsonConverterCtorAttribute to use constructor type parameter instead of generic type parameter to support .net framework
+
+* Version 8.4.3 - 03 Dec 2024
+    * Fixed KlineTracker update handling
+
+* Version 8.4.2 - 02 Dec 2024
+    * Removed special characters in ClientOrderIdSeperator to adhere to field content rules
+
+* Version 8.4.1 - 02 Dec 2024
+    * Added JsonConverterCtorAttribute to allow specifying a custom JsonConverter with constructor parameters on properties
+    * Added ReplaceConverter System.Text.Json converter
+    * Added LibraryHelpers class for internal helper methods
+
+* Version 8.4.0 - 28 Nov 2024
+    * Added GetFeesAsync Shared REST client support
+    * Added LibraryOptions base class
+    * Added CommaSplitEnumConverter System.Text.Json converter
+    * Added TimePeriodFilterSupport and MaxLimit properties to PaginatedEndpointOptions
+    * Updated package dependency versions
+
+* Version 8.3.0 - 19 Nov 2024
+    * Added support for IOptions injection, allowing options to be read from IConfiguration
+    * Added handling of Infinity values in decimal converter
+    * Added rate limit update event
+    * Small refactor on client options internals
+    * Fixed concurrency issue when unsubscribing websocket subscription during reconnection
+
+* Version 8.2.0 - 06 Nov 2024
+    * Added support for not allowing duplicate subscription topics on the same websocket connection
+    * Added PerAccount SharedLeverageSettingMode enum value, changed Side on SharedUserTrade to nullable
+    * Added support for object deserialization in SystemTextJsonMessageAccessor.GetValue<T>
+    * Changed SocketApiClient GetAuthenticationRequest to GetAuthenticationRequestAsync to allow for requesting token
+
+* Version 8.1.1 - 01 Nov 2024
+    * Fixed socket connections trying to authenticated connection when it's marked as dedicated request connection even when no authentication is needed
+    * Fixed System.Text.Json ArrayConverter not passing serializer options to nested deserialization
+    * Fixed System.Text.Json ArrayConverter creating new serializer options each time a JsonConverter attribute is encountered
+
+* Version 8.1.0 - 28 Oct 2024
+    * Added KlineTracker and TradeTracker implementation
+    * Added Side to SharedTrade model
+    * Added overload for Create method in OrderBookFactory using SharedSymbol
+    * Added ValidateMessage method to websocket Query object to filter messages even though it is matched to the query based on the  ListenIdentifier
+    * Added DoHandleReset method for websocket subscriptions
+    * Added ConnectionId to RequestDefinition to correctly handle connection and path rate limiting configuration
+    * Added System.Text.Json ArrayConverter Write implementation
+    * Updated SharedFuturesTicker LastPrice, HighPrice and LowPrice properties to be nullable
+    * Updated SetApiCredentials method to also updated the credentials on the client specific options to prevent unknown client credentials in some situations
+
+* Version 8.0.3 - 14 Oct 2024
+    * Added support for duplicate array indexes in System.Text.Json ArrayConverter
+    * Added fallback for unparsable value in System.Text.Json NumberStringConverter
+    * Added Authenticated property on base client and shared client
+    * Added GetValues System.Text.Json implementation in message accessor
+
+* Version 8.0.2 - 09 Oct 2024
+    * Updated dependency versions, including System.Text.Json from 8.0.4 to 8.0.5 containing a vulnerability fix
+
+* Version 8.0.1 - 07 Oct 2024
+    * Added cached library version properties on base client
+    * Added support for derserializing 0001-01-01 as datetime null value
+    * Added ToRfc3339String extension method for DateTime type
+
+* Version 8.0.0 - 27 Sep 2024
+    * Added new cross exchange interfaces implementation
+        * Supports REST, WebSocket, Spot and Futures API's
+        * Added various client interfaces for specific functionality
+        * Added SharedSymbol type, taking care of symbol formatting for different exchanges
+        * Added dynamic pagination support for shared functionality
+        * Added various shared Enum definitions
+        * Added ExchangeWebResult and ExchangeEvent, exchange specific versions of WebCallResult and DataEvent
+        * See https://jkorf.github.io/CryptoExchange.Net/index.html#idocs_shared for more info
+    * Added tradingMode and deliverData parameters to BaseApiClient FormatSymbol method
+    * Added ExecutePages method to ExchangeHelpers static class
+    * Added ApplySymbolRules method to ExchangeHelpers static class
+    * Added ResubscribingFailed event for websocket connections
+    * Added handling of http result 429 (ratelimited) during websocket connection
+    * Added Websocket dispose before creating new connection when reconnecting
+    * Updated Sourcelink package version
+    * Marked ISpotClient and IFuturesClient references as deprecated
+
+
+* Version 7.11.2 - 28 Aug 2024
+    * Fixed issues when ratelimiting is canceled using the provided cancellation token
+
+* Version 7.11.1 - 25 Aug 2024
+    * Improved closing logic websockets
+
+* Version 7.11.0 - 07 Aug 2024
+    * Added ParseString static method on EnumConverter for parsing strings manually
+    * Added support for decimal values in System.Text.Json NumberStringConverter
+    * Added support for `null` string values in System.Text.Json DecimalConverter
+    * Added support for number deserialization when requesting string in System.Text.Json MessageAccessor.GetValue
+    * Added deserialization handling of json values too big to fit decimal value
+    * Decreased some memory allocations during rest request authentication
+    * Fixed subscriptions trying to send unsubscribe request when the socket connection will be closed anyway
+    * Removed SecureString usage in credentials; it's not recommended to be used
+    * Removed some extension methods no longer relevant
+    * Improved testing checks
+
+* Version 7.10.0 - 26 Jul 2024
+    * Added System.Text.Json NumberStringConverter
+    * Added integration testing base class
+    * Added AddSecondsString and AddOptionalSecondsString to ParameterCollection
+    * Added Decompress method for ReadOnlyMemory using non-GZip deflate
+    * Added SocketConnection parameter to SocketConnection PreprocessStreamMessage
+    * Fixed websocket reconnect/unsubscribe timing bug
+    * Fixed issue in System.Text.Json array object deserialization skipping property when skipping an index
+    * Fixed order book logging bug
+    * Fixed bug in ParameterCollection AddEnumAsInt
+
+* Version 7.9.0 - 16 Jul 2024
+    * Added some checks in websocket connection handling
+    * Added As<T> and AsError<T> methods on untyped WebCallResult
+    * Updated System.Text.Json package to version 8.0.4 to fix vulnerability
+    * Updated websocket subscription response handling to remove the thread blocking ManualResetEvent usage
+    * Updated static logging classes access modifier from internal to public so they can be called in overriden methods
+    * Updated some testing object implementations
+    * Fixed authentication error when reconnecting an unauthenticated connection which was marked as dedicated query connection
+    * Small improvements in SystemTextJsonMessageAccessor
+    * Fixed System.Text.Json ArrayConverter implementation nullable value types handling
+
+* Version 7.8.0 - 02 Jul 2024
+    * Updated single endpoint limit configuration
+    * Added LongConverter for nullable longs
+    * Updated SystemTextJsonComparer logic
+
+* Version 7.7.3 - 26 Jun 2024
+    * Fixed request ids not matching in logging
+    * Added nullable int converter for System.Text.Json
+    * Small fixes in tests
+
+* Version 7.7.2 - 25 Jun 2024
+    * Fixed ratelimiting issue possibly creating negative delays
+
+* Version 7.7.1 - 23 Jun 2024
+    * Fixes for caching implementation
+
+* Version 7.7.0 - 23 Jun 2024
+    * Caching support
+        * Caching is supported for GET requests within a certain time frame
+        * Enable caching by setting CachingEnabled to true in the client options
+        * Added DataSource to CallResult object
+    * Dedicated websocket connection
+        * Added functionality for always having a connection open which can then be used for order operations
+        * This eliminates the initial connection time for the first request
+        * WebSocket connection can be prepared by calling PrepareConnectionsAsync on the Api client, for example `await binanceSocketClient.SpotApi.PrepareConnectionsAsync()`. This is only needed initially; it will be reconnected when connection is lost.
+    * Added CancellationToken support for websocket queries
+    * Added SocketConnection parameter to SocketApiClient.GetAuthenticationRequest method
+    * Added ObjectStringConverter base converter for deserializing nested json strings
+    * Fixed websocket issue with ratelimiting and reconnecting interaction
+    * Fixed rate limiting issue with sub-millisecond delays
+    * Fixed websocket connection will now close if authentication fails because of not set credentials
+    * Updated websocket reconnection handling and options, added backoff policy
+    * Removed check for confirmed subscription as data often is pushed before the subscription is confirmed
+
+* Version 7.6.0 - 11 Jun 2024
+    * Added support for specifying seperate uri and body parameters
+    * Added support for different message and handling generic types on socket queries
+    * Added support for PATCH http method requests
+    * Added support for setting http request body to a specific type directly
+    * Split DataEvent.Topic into StreamId and Symbol properties
+    * Added support for negative time values parsing
+    * Added some helper methods for converting DataEvent to CallResult
+    * Added support for GZip/Deflate automatic decompressing in the default HttpClient
+    * Updated some testing methods
+
+* Version 7.5.2 - 07 May 2024
+    * Fixed SetApiCredentials not correctly being used by rate limiter causing exception
+
+* Version 7.5.1 - 03 May 2024
+    * Some small improvements in unit testing components
+
+* Version 7.5.0 - 01 May 2024
+    * Added testing implementations
+    * Small refactor AuthenticationProvider to allow better testing
+    * Change result of MessageAccessor.Read methods to CallResult so error can be returned
+    * Moved some DateTimeConverter logic to seperate methods to allow access from outside converters
+
+* Version 7.4.0 - 28 Apr 2024
+    * Added FormatSymbol on IBaseApiClient interface
+    * Added IOrderBookFactory interface
+    * Removed ExchangeOptions as base class for OrderBookOptions
+
+* Version 7.3.3 - 23 Apr 2024
+    * Added support for new DateTime format parsing
+    * Updated some logging
+    * Fixed concurrency issue in rest request sending
+
+* Version 7.3.2 - 19 Apr 2024
+    * Fix for endpoint specific rate limiting throwing exception
+
+* Version 7.3.1 - 18 Apr 2024
+    * Fixed websocket system subscriptions getting marked as unconfirmed when reconnecting
+
+* Version 7.3.0 - 17 Apr 2024
+    * Added new method for sending Rest requests which splits the static and dynamic parameters
+	* Refactored rate limiting implementation
+		* Ratelimiters now statically applied for all clients
+		* Added support for different rate limit window types
+		* Added modular configuration of rate limits
+		* Added rate limit check when creating websocket connections
+		* Added automatic handling and retry for Retry-After responses
+		* Added configuration for setting ratelimit for each individual endpoint
+		* Added event for when rate limit is triggered
+	* Added SocketClient GetSocketApiClientStates method
+
+* Version 7.2.1 - 05 Apr 2024
+    * Improved websocket reconnect logic
+    * Simplified SystemTextJsonMessageAccessor value retrieval
+    * Fixed System.Text.Json BoolConverter value writing
+
+* Version 7.2.0 - 24 Mar 2024
+    * Added ArrayParametersSerialization.JsonArray support
+    * Refactored to high-performance logging for hot paths
+    * Updated SymbolOrderBook to use LoggerFactory
+    * Performance improvements
+    * Small bug fixes
+    * Updated logging
+
+* Version 7.1.0 - 16 Mar 2024
+	* Added initial System.Text.Json deserialization support
+	* Added support for setting MessageSendSizeLimit for websocket clients to limit message size
+	* Added Exchange name property to IRestClient and ISocketClient interface
+	* Abstracted out rest client deserialization so different (de)serializers can be used
+	* Cleaned up rest client response handling
+	* Continued update of websocket message handling
+		* Use ReadonlyMemory<byte> to represent message data to prevent copying data multiple times
+		* Switched back to non-async websocket message handling to remove tasks overhead
+	* Updated package dependencies to latest versions
+	* Updated unit test package dependencies and updated tests accordingly
+	* Moved some properties used by the RestApiClient from the BaseApiClient
+	* Fixed issue with multiple concurrent subscribe calls in socket client
+
+* Version 7.0.0 - 24 Feb 2024
+    * Full overhaul of Websocket message handling
+    * Abstracted out Newtonsoft.Json references in preparation of moving to System.Text.Json
+    * Updated SendPeriodic to operate on connection level instead of client level to prevent looping when there are no connections
+    * Added check to not send an unsubscribe message if there is another subscription listening to the same events
+    * Added CryptoRestClient and CryptoSocketClient as aggregate for accessing different exchange APIs
+    * Updated socket client log messages
+    * Updated socket client GetSubscriptionState output
+
+* Version 6.2.5 - 09 Jan 2024
+    * Added support for deserializing null and empty string values to BoolConverter
+
+* Version 6.2.4 - 04 Jan 2024
+    * Fixed parsing of DateTime value of zero with additional zero decimal places
+
+* Version 6.2.3 - 02 Dec 2023
+    * Fixed requestBodyFormat parameter handling
+
+* Version 6.2.2 - 02 Dec 2023
+    * Added support for specifying the request body content type on a per request basis
+    * Added DecimalStringWriterConverter
+    * Added RequestId to WebCallResult model
+    * Updated response logging
+
+* Version 6.2.1 - 28 Oct 2023
+    * Utility methods
+
+* Version 6.2.0 - 24 Oct 2023
+    * Added SerializerOptions helper class for setting a default serializer
+    * Added ParameterCollection helper class for easier parameter definition
+    * Added extra helper methods AuthenticationProvider
+    * Remove interface entries meant for internal use
+    * Added support for writing int values to the EnumConverter
+
+* Version 6.1.5 - 08 Oct 2023
+    * Added UpdateType to socket DataEvent
+    * Added additional scenarios for BoolConverter
+    * Updated some logging
+
+* Version 6.1.4 - 23 Sep 2023
+    * Added BoolConverter
+    * Added parameter for logging warning message on missing enum entry to EnumConverter
+
+* Version 6.1.3 - 18 Sep 2023
+    * Fix for concurrency exception in socket subscription
+
+* Version 6.1.2 - 11 Sep 2023
+    * Added support for multiple of the same ratelimiting type in the same rate limiter
+    * Fixed nullreference on rate limit error if no Retry-After header is returned
+
+* Version 6.1.1 - 04 Sep 2023
+    * Fixes for json converters
+
+* Version 6.1.0 - 24 Aug 2023
+    * Added support for ratelimiting on socket connections
+    * Added rest ratelimit handling and parsing
+    * Added ServerRatelimitError error
+
+* Version 6.0.3 - 23 Jul 2023
+    * Fixed Proxy not getting applied in rest clients when not using DI
+
+* Version 6.0.2 - 05 Jul 2023
+    * Added properties generic dictionary to SocketConnection
+
+* Version 6.0.1 - 29 Jun 2023
+    * Added LogLevel optional parameter to TraceLoggerProvider
+
+* Version 6.0.0 - 25 Jun 2023
+    * Updated ApiCredentials to support RSA signing as well as the default Hmac signature
+    * Removed custom logging implementation in favor of using `Microsoft.Extensions.Logging` ILogger directly
+    * Refactored client options for easier use
+    * Added easier way of switching environments
+    * Added ResponseLength and ToString() override on WebCallResult object
+    * Fixed memory leak in AsyncResetEvent
+
 * Version 5.4.3 - 14 Apr 2023
     * Fixed potential threading exception in socket connection
 

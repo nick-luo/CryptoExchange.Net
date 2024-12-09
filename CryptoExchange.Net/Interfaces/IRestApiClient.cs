@@ -1,7 +1,4 @@
-﻿using CryptoExchange.Net.Objects;
-using System;
-
-namespace CryptoExchange.Net.Interfaces
+﻿namespace CryptoExchange.Net.Interfaces
 {
     /// <summary>
     /// Base rest API client
@@ -17,17 +14,5 @@ namespace CryptoExchange.Net.Interfaces
         /// Total amount of requests made with this API client
         /// </summary>
         int TotalRequestsMade { get; set; }
-
-        /// <summary>
-        /// Get time offset for an API client. Return null if time syncing shouldnt/cant be done
-        /// </summary>
-        /// <returns></returns>
-        TimeSpan? GetTimeOffset();
-
-        /// <summary>
-        /// Get time sync info for an API client. Return null if time syncing shouldnt/cant be done
-        /// </summary>
-        /// <returns></returns>
-        TimeSyncInfo? GetTimeSyncInfo();
     }
 }

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Logging;
+using CryptoExchange.Net.Clients;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Options;
+using CryptoExchange.Net.SharedApis;
 using CryptoExchange.Net.UnitTests.TestImplementations;
 using Microsoft.Extensions.Logging;
 
@@ -14,29 +18,45 @@ namespace CryptoExchange.Net.UnitTests
     {       
         public TestSubClient SubClient { get; }
 
-        public TestBaseClient(): base("Test", new TestOptions())
+        public TestBaseClient(): base(null, "Test")
         {
-            SubClient = AddApiClient(new TestSubClient(new TestOptions(), new RestApiClientOptions()));
+            var options = new TestClientOptions();
+            Initialize(options);
+            SubClient = AddApiClient(new TestSubClient(options, new RestApiOptions()));
         }
 
-        public TestBaseClient(ClientOptions exchangeOptions) : base("Test", exchangeOptions)
+        public TestBaseClient(TestClientOptions exchangeOptions) : base(null, "Test")
         {
+            Initialize(exchangeOptions);
+            SubClient = AddApiClient(new TestSubClient(exchangeOptions, new RestApiOptions()));
         }
 
         public void Log(LogLevel verbosity, string data)
         {
-            log.Write(verbosity, data);
+            _logger.Log(verbosity, data);
         }
     }
 
     public class TestSubClient : RestApiClient
     {
-        public TestSubClient(ClientOptions options, RestApiClientOptions apiOptions) : base(new Log(""), options, apiOptions)
+        public TestSubClient(RestExchangeOptions<TestEnvironment> options, RestApiOptions apiOptions) : base(new TraceLogger(), null, "https://localhost:123", options, apiOptions)
         {
         }
 
-        public CallResult<T> Deserialize<T>(string data) => Deserialize<T>(data, null, null);
+        public CallResult<T> Deserialize<T>(string data)
+        {
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+            var accessor = CreateAccessor();
+            var valid = accessor.Read(stream, true).Result;
+            if (!valid)
+                return new CallResult<T>(new ServerError(data));
+            
+            var deserializeResult = accessor.Deserialize<T>();
+            return deserializeResult;
+        }
 
+        /// <inheritdoc />
+        public override string FormatSymbol(string baseAsset, string quoteAsset, TradingMode futuresType, DateTime? deliverDate = null) => $"{baseAsset.ToUpperInvariant()}{quoteAsset.ToUpperInvariant()}";
         public override TimeSpan? GetTimeOffset() => null;
         public override TimeSyncInfo GetTimeSyncInfo() => null;
         protected override AuthenticationProvider CreateAuthenticationProvider(ApiCredentials credentials) => throw new NotImplementedException();
@@ -49,16 +69,11 @@ namespace CryptoExchange.Net.UnitTests
         {
         }
 
-        public override void AuthenticateRequest(RestApiClient apiClient, Uri uri, HttpMethod method, Dictionary<string, object> providedParameters, bool auth, ArrayParametersSerialization arraySerialization, HttpMethodParameterPosition parameterPosition, out SortedDictionary<string, object> uriParameters, out SortedDictionary<string, object> bodyParameters, out Dictionary<string, string> headers)
+        public override void AuthenticateRequest(RestApiClient apiClient, Uri uri, HttpMethod method, ref IDictionary<string, object> uriParams, ref IDictionary<string, object> bodyParams, ref Dictionary<string, string> headers, bool auth, ArrayParametersSerialization arraySerialization, HttpMethodParameterPosition parameterPosition, RequestBodyFormat bodyFormat)
         {
-            bodyParameters = new SortedDictionary<string, object>();
-            uriParameters = new SortedDictionary<string, object>();
-            headers = new Dictionary<string, string>();
         }
 
-        public override string Sign(string toSign)
-        {
-            return toSign;
-        }
+        public string GetKey() => _credentials.Key;
+        public string GetSecret() => _credentials.Secret;
     }
 }

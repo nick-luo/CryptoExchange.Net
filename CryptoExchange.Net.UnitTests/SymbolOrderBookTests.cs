@@ -4,21 +4,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using CryptoExchange.Net.Interfaces;
 using CryptoExchange.Net.Objects;
+using CryptoExchange.Net.Objects.Options;
+using CryptoExchange.Net.Objects.Sockets;
 using CryptoExchange.Net.OrderBook;
-using CryptoExchange.Net.Sockets;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace CryptoExchange.Net.UnitTests
 {
     [TestFixture]
     public class SymbolOrderBookTests
     {
-        private static OrderBookOptions defaultOrderBookOptions = new OrderBookOptions();
+        private static readonly OrderBookOptions _defaultOrderBookOptions = new OrderBookOptions();
 
         private class TestableSymbolOrderBook : SymbolOrderBook
         {
-            public TestableSymbolOrderBook() : base("Test", "BTC/USD", defaultOrderBookOptions)
+            public TestableSymbolOrderBook() : base(null, "Test", "Test", "BTC/USD")
             {
+                Initialize(_defaultOrderBookOptions);
             }
 
 
@@ -35,12 +38,12 @@ namespace CryptoExchange.Net.UnitTests
             public void SetData(IEnumerable<ISymbolOrderBookEntry> bids, IEnumerable<ISymbolOrderBookEntry> asks)
             {
                 Status = OrderBookStatus.Synced;
-                base.bids.Clear();
+                base._bids.Clear();
                 foreach (var bid in bids)
-                    base.bids.Add(bid.Price, bid);
-                base.asks.Clear();
+                    base._bids.Add(bid.Price, bid);
+                base._asks.Clear();
                 foreach (var ask in asks)
-                    base.asks.Add(ask.Price, ask);
+                    base._asks.Add(ask.Price, ask);
             }
         }
 
@@ -54,31 +57,31 @@ namespace CryptoExchange.Net.UnitTests
         public void GivenEmptyBidList_WhenBestBid_ThenEmptySymbolOrderBookEntry()
         {
             var symbolOrderBook = new TestableSymbolOrderBook();
-            Assert.IsNotNull(symbolOrderBook.BestBid);
-            Assert.AreEqual(0m, symbolOrderBook.BestBid.Price);
-            Assert.AreEqual(0m, symbolOrderBook.BestAsk.Quantity);
+            ClassicAssert.IsNotNull(symbolOrderBook.BestBid);
+            Assert.That(0m == symbolOrderBook.BestBid.Price);
+            Assert.That(0m == symbolOrderBook.BestAsk.Quantity);
         }
 
         [TestCase]
         public void GivenEmptyAskList_WhenBestAsk_ThenEmptySymbolOrderBookEntry()
         {
             var symbolOrderBook = new TestableSymbolOrderBook();
-            Assert.IsNotNull(symbolOrderBook.BestBid);
-            Assert.AreEqual(0m, symbolOrderBook.BestBid.Price);
-            Assert.AreEqual(0m, symbolOrderBook.BestAsk.Quantity);
+            ClassicAssert.IsNotNull(symbolOrderBook.BestBid);
+            Assert.That(0m == symbolOrderBook.BestBid.Price);
+            Assert.That(0m == symbolOrderBook.BestAsk.Quantity);
         }
 
         [TestCase]
         public void GivenEmptyBidAndAskList_WhenBestOffers_ThenEmptySymbolOrderBookEntries()
         {
             var symbolOrderBook = new TestableSymbolOrderBook();
-            Assert.IsNotNull(symbolOrderBook.BestOffers);
-            Assert.IsNotNull(symbolOrderBook.BestOffers.Bid);
-            Assert.IsNotNull(symbolOrderBook.BestOffers.Ask);
-            Assert.AreEqual(0m, symbolOrderBook.BestOffers.Bid.Price);
-            Assert.AreEqual(0m, symbolOrderBook.BestOffers.Bid.Quantity);
-            Assert.AreEqual(0m, symbolOrderBook.BestOffers.Ask.Price);
-            Assert.AreEqual(0m, symbolOrderBook.BestOffers.Ask.Quantity);
+            ClassicAssert.IsNotNull(symbolOrderBook.BestOffers);
+            ClassicAssert.IsNotNull(symbolOrderBook.BestOffers.Bid);
+            ClassicAssert.IsNotNull(symbolOrderBook.BestOffers.Ask);
+            Assert.That(0m == symbolOrderBook.BestOffers.Bid.Price);
+            Assert.That(0m == symbolOrderBook.BestOffers.Bid.Quantity);
+            Assert.That(0m == symbolOrderBook.BestOffers.Ask.Price);
+            Assert.That(0m == symbolOrderBook.BestOffers.Ask.Quantity);
         }
 
         [TestCase]
@@ -101,12 +104,12 @@ namespace CryptoExchange.Net.UnitTests
             var resultBids2 = orderbook.CalculateAverageFillPrice(1.5m, OrderBookEntryType.Bid);
             var resultAsks2 = orderbook.CalculateAverageFillPrice(1.5m, OrderBookEntryType.Ask);
 
-            Assert.True(resultBids.Success);
-            Assert.True(resultAsks.Success);
-            Assert.AreEqual(1.05m, resultBids.Data);
-            Assert.AreEqual(1.25m, resultAsks.Data);
-            Assert.AreEqual(1.06666667m, resultBids2.Data);
-            Assert.AreEqual(1.23333333m, resultAsks2.Data);
+            Assert.That(resultBids.Success);
+            Assert.That(resultAsks.Success);
+            Assert.That(1.05m == resultBids.Data);
+            Assert.That(1.25m == resultAsks.Data);
+            Assert.That(1.06666667m == resultBids2.Data);
+            Assert.That(1.23333333m == resultAsks2.Data);
         }
 
         [TestCase]
@@ -129,12 +132,12 @@ namespace CryptoExchange.Net.UnitTests
             var resultBids2 = orderbook.CalculateTradableAmount(1.5m, OrderBookEntryType.Bid);
             var resultAsks2 = orderbook.CalculateTradableAmount(1.5m, OrderBookEntryType.Ask);
 
-            Assert.True(resultBids.Success);
-            Assert.True(resultAsks.Success);
-            Assert.AreEqual(1.9m, resultBids.Data);
-            Assert.AreEqual(1.61538462m, resultAsks.Data);
-            Assert.AreEqual(1.4m, resultBids2.Data);
-            Assert.AreEqual(1.23076923m, resultAsks2.Data);
+            Assert.That(resultBids.Success);
+            Assert.That(resultAsks.Success);
+            Assert.That(1.9m == resultBids.Data);
+            Assert.That(1.61538462m == resultAsks.Data);
+            Assert.That(1.4m == resultBids2.Data);
+            Assert.That(1.23076923m == resultAsks2.Data);
         }
     }
 }

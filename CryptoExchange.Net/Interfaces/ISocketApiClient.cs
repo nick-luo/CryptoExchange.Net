@@ -1,6 +1,6 @@
 ﻿using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Sockets;
-using System;
+using CryptoExchange.Net.Objects.Options;
+using CryptoExchange.Net.Objects.Sockets;
 using System.Threading.Tasks;
 
 namespace CryptoExchange.Net.Interfaces
@@ -23,43 +23,26 @@ namespace CryptoExchange.Net.Interfaces
         /// </summary>
         double IncomingKbps { get; }
         /// <summary>
-        /// Client options
-        /// </summary>
-        SocketApiClientOptions Options { get; }
-        /// <summary>
         /// The factory for creating sockets. Used for unit testing
         /// </summary>
         IWebsocketFactory SocketFactory { get; set; }
-
         /// <summary>
-        /// Get the url to reconnect to after losing a connection
+        /// Current client options
         /// </summary>
-        /// <param name="connection"></param>
-        /// <returns></returns>
-        Task<Uri?> GetReconnectUriAsync(SocketConnection connection);
-
+        SocketExchangeOptions ClientOptions { get; }
+        /// <summary>
+        /// Current API options
+        /// </summary>
+        SocketApiOptions ApiOptions { get; }
         /// <summary>
         /// Log the current state of connections and subscriptions
         /// </summary>
-        string GetSubscriptionsState();
+        string GetSubscriptionsState(bool includeSubDetails = true);
         /// <summary>
         /// Reconnect all connections
         /// </summary>
         /// <returns></returns>
         Task ReconnectAsync();
-        /// <summary>
-        /// Update the original request to send when the connection is restored after disconnecting. Can be used to update an authentication token for example.
-        /// </summary>
-        /// <param name="request">The original request</param>
-        /// <returns></returns>
-        Task<CallResult<object>> RevitalizeRequestAsync(object request);
-        /// <summary>
-        /// Periodically sends data over a socket connection
-        /// </summary>
-        /// <param name="identifier">Identifier for the periodic send</param>
-        /// <param name="interval">How often</param>
-        /// <param name="objGetter">Method returning the object to send</param>
-        void SendPeriodic(string identifier, TimeSpan interval, Func<SocketConnection, object> objGetter);
         /// <summary>
         /// Unsubscribe all subscriptions
         /// </summary>
@@ -77,5 +60,11 @@ namespace CryptoExchange.Net.Interfaces
         /// <param name="subscription">The subscription to unsubscribe</param>
         /// <returns></returns>
         Task UnsubscribeAsync(UpdateSubscription subscription);
+
+        /// <summary>
+        /// Prepare connections which can subsequently be used for sending websocket requests. Note that this is not required. If not prepared it will be initialized at the first websocket request.
+        /// </summary>
+        /// <returns></returns>
+        Task<CallResult> PrepareConnectionsAsync();
     }
 }

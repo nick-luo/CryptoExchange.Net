@@ -1,5 +1,7 @@
 ﻿using CryptoExchange.Net.Objects;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace CryptoExchange.Net.UnitTests
@@ -16,7 +18,7 @@ namespace CryptoExchange.Net.UnitTests
         public void ClampValueTests(decimal min, decimal max, decimal input, decimal expected)
         {
             var result = ExchangeHelpers.ClampValue(min, max, input);
-            Assert.AreEqual(expected, result);
+            Assert.That(expected == result);
         }
 
         [TestCase(0.1, 1, 0.1, RoundingType.Down, 0.4, 0.4)]
@@ -33,7 +35,7 @@ namespace CryptoExchange.Net.UnitTests
         public void AdjustValueStepTests(decimal min, decimal max, decimal? step, RoundingType roundingType, decimal input, decimal expected)
         {
             var result = ExchangeHelpers.AdjustValueStep(min, max, step, roundingType, input);
-            Assert.AreEqual(expected, result);
+            Assert.That(expected == result);
         }
 
         [TestCase(0.1, 1, 2, RoundingType.Closest, 0.4, 0.4)]
@@ -48,7 +50,7 @@ namespace CryptoExchange.Net.UnitTests
         public void AdjustValuePrecisionTests(decimal min, decimal max, int? precision, RoundingType roundingType, decimal input, decimal expected)
         {
             var result = ExchangeHelpers.AdjustValuePrecision(min, max, precision, roundingType, input);
-            Assert.AreEqual(expected, result);
+            Assert.That(expected == result);
         }
 
         [TestCase(5, 0.1563158, 0.15631)]
@@ -59,7 +61,7 @@ namespace CryptoExchange.Net.UnitTests
         public void RoundDownTests(int decimalPlaces, decimal input, decimal expected)
         {
             var result = ExchangeHelpers.RoundDown(input, decimalPlaces);
-            Assert.AreEqual(expected, result);
+            Assert.That(expected == result);
         }
 
         [TestCase(0.1234560000, "0.123456")]
@@ -67,7 +69,22 @@ namespace CryptoExchange.Net.UnitTests
         public void NormalizeTests(decimal input, string expected)
         {
             var result = ExchangeHelpers.Normalize(input);
-            Assert.AreEqual(expected, result.ToString(CultureInfo.InvariantCulture));
+            Assert.That(expected == result.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Test]
+        [TestCase("123", "BKR", 32, true, "BKRJK123")]
+        [TestCase("123", "BKR", 32, false, "123")]
+        [TestCase("123123123123123123123123123123", "BKR", 32, true, "123123123123123123123123123123")] // 30
+        [TestCase("12312312312312312312312312312", "BKR", 32, true, "12312312312312312312312312312")] // 27
+        [TestCase("123123123123123123123123123", "BKR", 32, true, "BKRJK123123123123123123123123123")] // 25
+        [TestCase(null, "BKR", 32, true, null)]
+        public void ApplyBrokerIdTests(string clientOrderId, string brokerId, int maxLength, bool allowValueAdjustement, string expected)
+        {
+            var result = LibraryHelpers.ApplyBrokerId(clientOrderId, brokerId, maxLength, allowValueAdjustement);
+            
+            if (expected != null)
+                Assert.That(result, Is.EqualTo(expected));
         }
     }
 }

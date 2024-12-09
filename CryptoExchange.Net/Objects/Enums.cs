@@ -16,6 +16,29 @@
     }
 
     /// <summary>
+    /// What to do when a request would exceed the rate limit
+    /// </summary>
+    public enum RateLimitWindowType
+    {
+        /// <summary>
+        /// A sliding window
+        /// </summary>
+        Sliding,
+        /// <summary>
+        /// A fixed interval window
+        /// </summary>
+        Fixed,
+        /// <summary>
+        /// A fixed interval starting after the first request
+        /// </summary>
+        FixedAfterFirst,
+        /// <summary>
+        /// Decaying window
+        /// </summary>
+        Decay
+    }
+
+    /// <summary>
     /// Where the parameters for a HttpMethod should be added in a request
     /// </summary>
     public enum HttpMethodParameterPosition
@@ -43,6 +66,33 @@
         /// Json
         /// </summary>
         Json
+    }
+
+    /// <summary>
+    /// Tracker sync status
+    /// </summary>
+    public enum SyncStatus
+    {
+        /// <summary>
+        /// Not connected
+        /// </summary>
+        Disconnected,
+        /// <summary>
+        /// Syncing, data connection is being made
+        /// </summary>
+        Syncing,
+        /// <summary>
+        /// The connection is active, but the full data backlog is not yet reached. For example, a tracker set to retain 10 minutes of data only has 8 minutes of data at this moment.
+        /// </summary>
+        PartiallySynced,
+        /// <summary>
+        /// Synced
+        /// </summary>
+        Synced,
+        /// <summary>
+        /// Disposed
+        /// </summary>
+        Diposed
     }
 
     /// <summary>
@@ -99,15 +149,22 @@
     /// Define how array parameters should be send
     /// </summary>
     public enum ArrayParametersSerialization
+#pragma warning disable CS1570 // XML comment has badly formed XML
     {
         /// <summary>
-        /// Send multiple key=value for each entry
+        /// Send as key=value1&key=value2
         /// </summary>
         MultipleValues,
+
         /// <summary>
-        /// Create an []=value array
+        /// Send as key[]=value1&key[]=value2
         /// </summary>
-        Array
+        Array,
+        /// <summary>
+        /// Send as key=[value1, value2]
+        /// </summary>
+        JsonArray
+#pragma warning restore CS1570 // XML comment has badly formed XML
     }
 
     /// <summary>
@@ -122,6 +179,60 @@
         /// <summary>
         /// Round to closest value
         /// </summary>
-        Closest
+        Closest,
+        /// <summary>
+        /// Round up (ceil)
+        /// </summary>
+        Up
     }
+
+    /// <summary>
+    /// Type of the update
+    /// </summary>
+    public enum SocketUpdateType
+    {
+        /// <summary>
+        /// A update
+        /// </summary>
+        Update,
+        /// <summary>
+        /// A snapshot, generally send at the start of the connection
+        /// </summary>
+        Snapshot
+    }
+
+    /// <summary>
+    /// Reconnect policy
+    /// </summary>
+    public enum ReconnectPolicy
+    {
+        /// <summary>
+        /// Reconnect is disabled
+        /// </summary>
+        Disabled,
+        /// <summary>
+        /// Fixed delay of `ReconnectInterval` between retries
+        /// </summary>
+        FixedDelay,
+        /// <summary>
+        /// Backof policy of 2^`reconnectAttempt`, where `reconnectAttempt` has a max value of 5
+        /// </summary>
+        ExponentialBackoff
+    }
+
+    /// <summary>
+    /// The data source of the result
+    /// </summary>
+    public enum ResultDataSource
+    {
+        /// <summary>
+        /// From server
+        /// </summary>
+        Server,
+        /// <summary>
+        /// From cache
+        /// </summary>
+        Cache
+    }
+
 }

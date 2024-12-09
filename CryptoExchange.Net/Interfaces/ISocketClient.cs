@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Objects.Options;
+using CryptoExchange.Net.Objects.Sockets;
 
 namespace CryptoExchange.Net.Interfaces
 {
@@ -12,9 +11,14 @@ namespace CryptoExchange.Net.Interfaces
     public interface ISocketClient: IDisposable
     {
         /// <summary>
+        /// The exchange name
+        /// </summary>
+        string Exchange { get; }
+
+        /// <summary>
         /// The options provided for this client
         /// </summary>
-        ClientOptions ClientOptions { get; }
+        ExchangeOptions ClientOptions { get; }
 
         /// <summary>
         /// Incoming kilobytes per second of data

@@ -4,13 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Binance.Net.Clients;
-using Binance.Net.Objects;
+using Bybit.Net.Clients;
 using ConsoleClient.Exchanges;
 using CryptoExchange.Net.Authentication;
-using CryptoExchange.Net.Sockets;
-using FTX.Net.Clients;
-using FTX.Net.Objects;
-using Microsoft.Extensions.Logging;
+using CryptoExchange.Net.Objects.Sockets;
 
 namespace ConsoleClient
 {
@@ -19,20 +16,18 @@ namespace ConsoleClient
         static Dictionary<string, IExchange> _exchanges = new Dictionary<string, IExchange>
         {
             { "Binance", new BinanceExchange() },
-            { "FTX", new FTXExchange() }
+            { "Bybit", new BybitExchange() }
         };
 
         static async Task Main(string[] args)
         {
-            BinanceClient.SetDefaultOptions(new BinanceClientOptions
+            BinanceRestClient.SetDefaultOptions(options =>
             {
-                LogLevel = LogLevel.Trace,
-                ApiCredentials = new ApiCredentials("APIKEY", "APISECRET")
+                options.ApiCredentials = new ApiCredentials("APIKEY", "APISECRET");
             });
-            FTXClient.SetDefaultOptions(new FTXClientOptions
+            BybitRestClient.SetDefaultOptions(options =>
             {
-                LogLevel = LogLevel.Trace,
-                ApiCredentials = new ApiCredentials("APIKEY", "APISECRET")
+                options.ApiCredentials = new ApiCredentials("APIKEY", "APISECRET");
             });
 
             while (true)

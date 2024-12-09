@@ -22,8 +22,8 @@ namespace CryptoExchange.Net.Interfaces
         /// Configure the requests created by this factory
         /// </summary>
         /// <param name="requestTimeout">Request timeout to use</param>
-        /// <param name="proxy">Proxy settings to use</param>       
         /// <param name="httpClient">Optional shared http client instance</param>
-        void Configure(TimeSpan requestTimeout, ApiProxy? proxy, HttpClient? httpClient=null);
+        /// <param name="proxy">Optional proxy to use when no http client is provided</param>
+        void Configure(ApiProxy? proxy, TimeSpan requestTimeout, HttpClient? httpClient=null);
     }
 }

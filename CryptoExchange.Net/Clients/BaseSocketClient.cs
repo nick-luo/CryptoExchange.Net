@@ -3,26 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CryptoExchange.Net.Authentication;
 using CryptoExchange.Net.Interfaces;
-using CryptoExchange.Net.Objects;
-using CryptoExchange.Net.Sockets;
+using CryptoExchange.Net.Logging.Extensions;
+using CryptoExchange.Net.Objects.Sockets;
 using Microsoft.Extensions.Logging;
 
-namespace CryptoExchange.Net
+namespace CryptoExchange.Net.Clients
 {
     /// <summary>
     /// Base for socket client implementations
     /// </summary>
-    public abstract class BaseSocketClient: BaseClient, ISocketClient
+    public abstract class BaseSocketClient : BaseClient, ISocketClient
     {
         #region fields
-        
+
         /// <summary>
         /// If client is disposing
         /// </summary>
-        protected bool disposing;
-        
+        protected bool _disposing;
+
         /// <inheritdoc />
         public int CurrentConnections => ApiClients.OfType<SocketApiClient>().Sum(c => c.CurrentConnections);
         /// <inheritdoc />
@@ -34,9 +33,9 @@ namespace CryptoExchange.Net
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="name">The name of the API this client is for</param>
-        /// <param name="options">The options for this client</param>
-        protected BaseSocketClient(string name, ClientOptions options) : base(name, options)
+        /// <param name="logger">Logger</param>
+        /// <param name="exchange">The name of the exchange this client is for</param>
+        protected BaseSocketClient(ILoggerFactory? logger, string exchange) : base(logger, exchange)
         {
         }
 
@@ -47,11 +46,11 @@ namespace CryptoExchange.Net
         /// <returns></returns>
         public virtual async Task UnsubscribeAsync(int subscriptionId)
         {
-            foreach(var socket in ApiClients.OfType<SocketApiClient>())
+            foreach (var socket in ApiClients.OfType<SocketApiClient>())
             {
                 var result = await socket.UnsubscribeAsync(subscriptionId).ConfigureAwait(false);
                 if (result)
-                    break;                
+                    break;
             }
         }
 
@@ -65,7 +64,7 @@ namespace CryptoExchange.Net
             if (subscription == null)
                 throw new ArgumentNullException(nameof(subscription));
 
-            log.Write(LogLevel.Information, $"Socket {subscription.SocketId} Unsubscribing subscription  " + subscription.Id);
+            _logger.UnsubscribingSubscription(subscription.SocketId, subscription.Id);
             await subscription.CloseAsync().ConfigureAwait(false);
         }
 
@@ -75,10 +74,10 @@ namespace CryptoExchange.Net
         /// <returns></returns>
         public virtual async Task UnsubscribeAllAsync()
         {
-            var tasks = new List<Task>();            
+            var tasks = new List<Task>();
             foreach (var client in ApiClients.OfType<SocketApiClient>())
                 tasks.Add(client.UnsubscribeAllAsync());
-            
+
             await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
         }
 
@@ -88,7 +87,7 @@ namespace CryptoExchange.Net
         /// <returns></returns>
         public virtual async Task ReconnectAsync()
         {
-            log.Write(LogLevel.Information, $"Reconnecting all {CurrentConnections} connections");
+            _logger.ReconnectingAllConnections(CurrentConnections);
             var tasks = new List<Task>();
             foreach (var client in ApiClients.OfType<SocketApiClient>())
             {
@@ -103,9 +102,25 @@ namespace CryptoExchange.Net
         public string GetSubscriptionsState()
         {
             var result = new StringBuilder();
-            foreach(var client in ApiClients.OfType<SocketApiClient>())            
-                result.AppendLine(client.GetSubscriptionsState());            
+            foreach (var client in ApiClients.OfType<SocketApiClient>().Where(c => c.CurrentSubscriptions > 0))
+            {
+                result.AppendLine(client.GetSubscriptionsState());
+            }
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Returns the state of all socket api clients
+        /// </summary>
+        /// <returns></returns>
+        public List<SocketApiClient.SocketApiClientState> GetSocketApiClientStates()
+        {
+            var result = new List<SocketApiClient.SocketApiClientState>();
+            foreach (var client in ApiClients.OfType<SocketApiClient>())
+            {
+                result.Add(client.GetState());
+            }
+            return result;
         }
     }
 }
